@@ -1,4 +1,4 @@
-package org.example.Herokuapp;
+package org.example;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
@@ -9,6 +9,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.example.Page.*;
 import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.CollectionCondition.size;
@@ -18,28 +19,14 @@ import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 
 public class HerokuappSteps {
-    //Checkbox
+    //  Checkbox
     private static final String BASE_URI = "https://the-internet.herokuapp.com/";
-    static SelenideElement checkbox = $(byXpath("//*[@type='checkbox'][1]"));
-    static SelenideElement clickTestCheckbox = $(byXpath("//*[@checked][1]"));
-    //Form Authentication
-    static SelenideElement enterUsername = $("#username");
-    static SelenideElement enterPassword = $("#password");
-    static SelenideElement buttonLogin = $(byXpath("//button[@type='submit']"));
-    static SelenideElement correctData = $(byXpath("//div[@class='flash success']"));
-    static SelenideElement incorrectData = $(byXpath("//div[@class='flash error']"));
-    //Hovers
-    static SelenideElement hoversOne = $(byXpath("//div[@class='figure'][1]"));
-    static SelenideElement text = $(byXpath("//a[@href='/users/1']"));
-    //Dynamically Loaded Page Elements
-    static SelenideElement buttonStart = $(byXpath("//button[text()='Start']"));
-    static SelenideElement textHello = $(byXpath("//h4[text()='Hello World!']"));
-    //Key Presses
-    static SelenideElement input = $("#target");
-    static SelenideElement result = $("#result");
-    //Add/Remove Elements
-    static SelenideElement addElement = $(byXpath("//button[@onclick='addElement()']"));
-    static ElementsCollection button = $$("button[onclick='deleteElement()']");
+    CheckboxPage checkboxPage = new CheckboxPage();
+    FormAuthenticationPage formAuthenticationPage = new FormAuthenticationPage();
+    HoversPage hoversPage = new HoversPage();
+    DynamicallyLoadedPageElementsPage dynamicallyLoadedPageElementsPage = new DynamicallyLoadedPageElementsPage();
+    KeyPressesPage keyPressesPage = new KeyPressesPage();
+    AddRemoveElementsPage addRemoveElementsPage = new AddRemoveElementsPage();
 
     @Given("^Открываем страницу с доменом \"([^\"]*)\"$")
     public void openPageDomain(String domain) {
@@ -51,63 +38,63 @@ public class HerokuappSteps {
     @When("^Делаем клик на checkbox$")
     public void makeClickCheckbox() {
         System.out.println("Кликнули на chekbox 1");
-        checkbox.click();
+        checkboxPage.checkbox.click();
     }
 
     @And("^Проверяем что он нажат$")
     public void checkPress() {
         System.out.println("Проверили что checkbox 1 нажат");
-        clickTestCheckbox.shouldBe();
+        checkboxPage.clickTestCheckbox.shouldBe();
     }
 
     //Form Authentication
     @When("^Вводим логин \"([^\"]*)\"$")
     public void enterLogin(String username) {
-        enterUsername.setValue(username);
+        formAuthenticationPage.enterUsername.setValue(username);
         System.out.println("Ввели логин");
     }
 
     @And("^Вводим пароль \"([^\"]*)\"$")
     public void enterPassword(String password) {
-        enterPassword.setValue(password);
+        formAuthenticationPage.enterPassword.setValue(password);
         System.out.println("Ввели пароль");
     }
 
     @Then("^Нажимаем на кнопку авторизации$")
     public void clickButtonLogin() {
         System.out.println("Нажимаем на кнопку авторизации");
-        buttonLogin.click();
+        formAuthenticationPage.buttonLogin.click();
     }
 
     @And("^При успешной авторизации видим  текст \"([^\"]*)\"$")
     public void successfulAuthorizationText(String successText) {
-        correctData.shouldBe(Condition.text(successText));
+        formAuthenticationPage.correctData.shouldBe(Condition.text(successText));
         System.out.println("При успешной авторизации увидели текст: " + successText);
     }
 
     @And("^При неуспешной авторизации видим  текст \"([^\"]*)\"$")
     public void failedAuthorizationText(String errorText) {
-        incorrectData.shouldBe(Condition.text(errorText));
+        formAuthenticationPage.incorrectData.shouldBe(Condition.text(errorText));
         System.out.println("При неуспешной авторизации увидели текст: " + errorText);
     }
 
     //Hovers
     @When("^Наводим на нужного пользователя$")
     public void pointUser() {
-        hoversOne.hover();
+        hoversPage.hoversOne.hover();
         System.out.println("Навели на пользователя");
     }
 
     @And("^Проверяем, что отображается текст$")
     public void checkingText() {
-        text.shouldBe();
+        hoversPage.text.shouldBe();
         System.out.println("Проверили, что текст отображается");
     }
 
     //Dynamically Loaded Page Elements
     @When("^Нажимаем на кнопку$")
     public void clickButtonStart() {
-        buttonStart.click();
+        dynamicallyLoadedPageElementsPage.buttonStart.click();
         System.out.println("Нажали кнопку Start");
     }
 
@@ -119,7 +106,7 @@ public class HerokuappSteps {
 
     @Then("^Видим текст$")
     public void waitingText() {
-        textHello.shouldHave(visible);
+        dynamicallyLoadedPageElementsPage.textHello.shouldHave(visible);
         System.out.println("Видим текст");
     }
 
@@ -127,13 +114,13 @@ public class HerokuappSteps {
     @When("^Нажимаем клавишу$")
     public void pressKey() {
         System.out.println("Нажимаем клавишу");
-        input.sendKeys(Keys.F6);
+        keyPressesPage.input.sendKeys(Keys.F6);
     }
 
     @And("^Проверяем, что клавиша нажалась$")
     public void checkingPressKey() {
         System.out.println("Проверяем, что клавиша нажалась");
-        result.shouldBe(text("You entered: F6"));
+        keyPressesPage.result.shouldBe(text("You entered: F6"));
     }
 
     //Add/Remove Elements
@@ -141,13 +128,13 @@ public class HerokuappSteps {
     public void addElements(int number) {
         System.out.println("Добавляем нужное количество элементов");
         for (int i = 0; i < number; i++) {
-            addElement.click();
+            addRemoveElementsPage.addElement.click();
         }
     }
 
     @And("^Проверяем элементы в колличестве (\\d+) штук$")
     public void checkingElements(int number) {
         System.out.println("Проверяем количество добавленных элементов");
-        button.shouldHave(size(number));
+        addRemoveElementsPage.button.shouldHave(size(number));
     }
 }

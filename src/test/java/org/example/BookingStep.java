@@ -1,5 +1,6 @@
-package org.example.Booking;
+package org.example;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -31,30 +32,16 @@ public class BookingStep {
                 .statusCode(200)
                 .log()
                 .body();
-    }
-
-    @When("^Получаем токен$")
-    public void getToken() {
         token = response.jsonPath().getString("token");
         System.out.println("Получаем токен " + token);
     }
 
     @When("^Создаем бронирование$")
-    public void createReservation() {
+    public void createReservation(String body) {
         System.out.println("Создали бронирование");
         bookingId = given()
                 .baseUri(BASE_URI)
-                .body("{\n" +
-                        "    \"firstname\" : \"Jim\",\n" +
-                        "    \"lastname\" : \"Brown\",\n" +
-                        "    \"totalprice\" : 111,\n" +
-                        "    \"depositpaid\" : true,\n" +
-                        "    \"bookingdates\" : {\n" +
-                        "        \"checkin\" : \"2018-01-01\",\n" +
-                        "        \"checkout\" : \"2019-01-01\"\n" +
-                        "    },\n" +
-                        "    \"additionalneeds\" : \"Breakfast\"\n" +
-                        "}")
+                .body(body)
                 .contentType(ContentType.JSON)
                 .post(BASE_URI + "/booking");
         bookingId
@@ -62,10 +49,6 @@ public class BookingStep {
                 .statusCode(200)
                 .log()
                 .body();
-    }
-
-    @And("^Получаем Id бронирования$")
-    public void getReservationId() {
         id = bookingId.jsonPath().getString("bookingid");
         System.out.println("Получаем Id бронирования " + id);
     }
@@ -84,22 +67,12 @@ public class BookingStep {
     }
 
     @Then("^Обновляем бронирование$")
-    public void updateReservation() {
+    public void updateReservation(String putBody) {
         System.out.println("Обновляем бронирование");
         given()
                 .header("Cookie", "token=" + token)
                 .baseUri(BASE_URI)
-                .body("{\n" +
-                        "    \"firstname\" : \"James\",\n" +
-                        "    \"lastname\" : \"Brown\",\n" +
-                        "    \"totalprice\" : 123,\n" +
-                        "    \"depositpaid\" : true,\n" +
-                        "    \"bookingdates\" : {\n" +
-                        "        \"checkin\" : \"2018-02-01\",\n" +
-                        "        \"checkout\" : \"2019-02-23\"\n" +
-                        "    },\n" +
-                        "    \"additionalneeds\" : \"Breakfast\"\n" +
-                        "}")
+                .body(putBody)
                 .contentType(ContentType.JSON)
                 .put(BASE_URI + "/booking/" + id)
                 .then()
@@ -146,21 +119,11 @@ public class BookingStep {
     }
 
     @Then("^Создаем бронирование, делая ошибки в теле метода$")
-    public void creatingReservationErrorsBody() {
+    public void creatingReservationErrorsBody(String errorBody) {
         System.out.println("Создаем бронирование с ошибками в теле метода");
         bookingId = given()
                 .baseUri(BASE_URI)
-                .body("{\n" +
-                        "    \"firstname\" : \"Jim\",\n" +
-                        "    \"lastname\" : \"Brown\",\n" +
-                        "    \"totalprice\" : 123456789,\n" +
-                        "    \"depositpaid\" : true,\n" +
-                        "    \"bookingdates\" : {\n" +
-                        "        \"checkin\" : \"2118-01-01\",\n" +
-                        "        \"checkout\" : \"0919-01-01\"\n" +
-                        "    },\n" +
-                        "    \"additionalneeds\" : \"Breakfast\"\n" +
-                        "}")
+                .body(errorBody)
                 .contentType(ContentType.JSON)
                 .post(BASE_URI + "/booking");
         bookingId
